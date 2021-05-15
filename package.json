@@ -17,6 +17,7 @@
     "mysql2": "^2.2.5",
     "sequelize": "^6.6.2",
     "sharp": "^0.28.1",
+    "util": "^0.12.3",
     "validator": "^10.11.0"
   },
   "devDependencies": {
