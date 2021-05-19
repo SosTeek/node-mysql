@@ -18,10 +18,18 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      confirmPassword: {
+      role: {
         type: Sequelize.STRING,
-        allowNull: false,
+        enum: ['admin', 'user'],
+        defaultValue: 'user'
       },
+      passwordChangedAt: Sequelize.DATE,
+      passwordResetToken: Sequelize.STRING,
+      passwordResetExpires: Sequelize.DATE,
+      // confirmPassword: {
+      //   type: Sequelize.STRING,
+      //   allowNull: false,
+      // },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -29,7 +37,7 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

@@ -19,7 +19,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       categoryId: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER,
+        // onDelete: 'CASCADE',
       },
       createdAt: {
         allowNull: false,

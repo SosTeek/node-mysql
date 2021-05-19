@@ -1,9 +1,33 @@
 // eslint-disable-next-line prefer-destructuring
 const Product = require('../models').Product;
+// eslint-disable-next-line prefer-destructuring
+const Category = require('../models').Category;
+// eslint-disable-next-line prefer-destructuring
+const Brand = require('../models').Brand;
 
 const catchAsync = require('../utils/catchAsync');
 
 exports.createProduct = catchAsync(async (req, res) => {
+  const validCategory = await Category.findOne({
+    where: { id: req.body.categoryId },
+  });
+  if (!validCategory) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Please provide a valid categoryId!!',
+    });
+  }
+  const validBrand = await Brand.findOne({
+    where: { id: req.body.brandId },
+  });
+
+  if (!validBrand) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Please provide a valid brandId!!',
+    });
+  }
+
   const newProduct = await Product.create(req.body);
   res.status(201).json({
     status: 'success',

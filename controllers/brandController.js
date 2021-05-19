@@ -3,6 +3,8 @@ const sharp = require('sharp');
 
 // eslint-disable-next-line prefer-destructuring
 const Brand = require('../models').Brand;
+// eslint-disable-next-line prefer-destructuring
+const Category = require('../models').Category;
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -38,12 +40,22 @@ exports.resizeBrandPhoto = catchAsync(async (req, res, next) => {
 });
 
 exports.createBrand = catchAsync(async (req, res) => {
+  const validCategory = await Category.findOne({
+    where: { id: req.body.categoryId },
+  });
+  if (!validCategory) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Please provide a valid categoryId!!',
+    });
+  }
   const newBrand = await Brand.create({
     brandName: req.body.brandName,
     brandImage: req.file.filename,
     brandTagline: req.body.brandTagline,
     categoryId: req.body.categoryId,
   });
+  console.log(newBrand.categoryId);
   res.status(201).json({
     status: 'success',
     data: {

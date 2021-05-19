@@ -1,5 +1,6 @@
 /*eslint-disable*/
 const User = require('../models').User;
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 
@@ -37,11 +38,20 @@ module.exports = (sequelize, DataTypes) => {
         },
     },
   },
-    confirmPassword: {
+    role: {
       type: DataTypes.STRING,
-      allowNull: false,
-    }
+      enum: ['admin', 'user'],
+      defaultValue: 'user',
+    },
+    passwordChangedAt: DataTypes.DATE,
+    passwordResetToken: DataTypes.STRING,
+    passwordResetExpires: DataTypes.DATE,
+    // confirmPassword: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // }
   }, 
+  /************* Hooks Didn't Worked */
   // {
   //   hooks: {
   //     beforeCreate: function (user, options) {
@@ -77,3 +87,15 @@ module.exports = (sequelize, DataTypes) => {
 //   next();
 // } )
 
+//Instance Method createPasswordResetToken()
+Model.prototype.createPasswordResetToken = function() {
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        this.passwordResetToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+        this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+        // console.log({resetToken}, this.passwordResetToken);
+
+        return resetToken;  
+};

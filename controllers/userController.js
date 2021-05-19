@@ -6,6 +6,10 @@ const catchAsync = require('../utils/catchAsync');
 
 exports.getAllUsers = catchAsync(async (req, res) => {
   const doc = await User.findAll();
+  if (!doc)
+    return res.status(404).json({
+      status: 'fail',
+    });
   res.status(200).json({
     status: 'success',
     results: doc.length,
@@ -48,6 +52,8 @@ exports.getOneUser = catchAsync(async (req, res) => {
       id: id,
     },
   });
+  console.log(doc);
+
   if (!doc) {
     res.status(404).json({
       status: 'fail',

@@ -25,7 +25,14 @@ module.exports = (sequelize, DataTypes) => {
       brandName: DataTypes.STRING,
       brandImage: DataTypes.STRING,
       brandTagline: DataTypes.STRING,
-      categoryId: DataTypes.STRING,
+      categoryId:{
+        type:  DataTypes.INTEGER,
+        references: {
+          model: 'Category',
+          key: 'id'
+        },
+        // onDelete: 'CASCADE',
+      },
     },
     {
       sequelize,
