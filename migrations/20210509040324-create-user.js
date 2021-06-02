@@ -23,9 +23,9 @@ module.exports = {
         enum: ['admin', 'user'],
         defaultValue: 'user'
       },
-      passwordChangedAt: Sequelize.DATE,
-      passwordResetToken: Sequelize.STRING,
-      passwordResetExpires: Sequelize.DATE,
+      passwordChangedAt: Sequelizec.DATE,
+      passwordResetToken: Sequelizec.STRING,
+      passwordResetExpires: Sequelizec.DATE,
       // confirmPassword: {
       //   type: Sequelize.STRING,
       //   allowNull: false,

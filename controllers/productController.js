@@ -1,3 +1,7 @@
+const catchAsync = require('express-async-handler');
+const SearchBuilder = require('sequelize-search-builder');
+const models = require('../models');
+// const { Op } = require('sequelize');
 // eslint-disable-next-line prefer-destructuring
 const Product = require('../models').Product;
 // eslint-disable-next-line prefer-destructuring
@@ -5,7 +9,8 @@ const Category = require('../models').Category;
 // eslint-disable-next-line prefer-destructuring
 const Brand = require('../models').Brand;
 
-const catchAsync = require('../utils/catchAsync');
+// const catchAsync = require('../utils/catchAsync');
+// const ApiFeatures = require('../utils/apiFeatures');
 
 exports.createProduct = catchAsync(async (req, res) => {
   const validCategory = await Category.findOne({
@@ -37,8 +42,51 @@ exports.createProduct = catchAsync(async (req, res) => {
   });
 });
 
+// With Filtering, Sorting and Paginations
 exports.getAllProducts = catchAsync(async (req, res) => {
-  const doc = await Product.findAll();
+  const { sort, page } = req.query;
+  const paramQuerySQl = {};
+  let { limit } = req.query;
+  let offset;
+
+  // filtering
+  const search = new SearchBuilder(models.Sequelize, req.query);
+  const whereQuery = search.getWhereQuery();
+
+  paramQuerySQl.where = whereQuery;
+  // if (filter !== '' && typeof filter !== 'undefined') {
+  //   const query = filter.split(',').map((item) => ({
+  //     [Op.iLike]: `%${item}%`,
+  //   }));
+  //   console.log(query);
+  //   paramQuerySQl.where = {
+  //     title: { [Op.or]: query },
+  //   };
+  // }
+  //sorting
+  if (sort !== '' && typeof sort !== 'undefined') {
+    // let order = [];
+    const query = sort.split(',').map((item) => {
+      if (item.charAt(0) !== '-') {
+        return [item, 'ASC'];
+      }
+      return [item.replace('-', ''), 'DESC'];
+    });
+    paramQuerySQl.order = query;
+  }
+  //paginations
+  if (page && limit !== '' && typeof page && limit !== 'undefined') {
+    paramQuerySQl.limit = parseInt(limit, 10);
+    offset = page * limit - limit;
+    paramQuerySQl.offset = offset;
+  } else {
+    limit = 5;
+    offset = 0;
+    paramQuerySQl.limit = limit;
+    paramQuerySQl.offset = offset;
+  }
+  console.log(paramQuerySQl);
+  const doc = await Product.findAndCountAll(paramQuerySQl);
   res.status(200).json({
     status: 'success',
     results: doc.length,
